@@ -18,6 +18,8 @@ public:
 
         HealthStatus checkTemperatureHealth() const;
 
+        HealthStatus checkOverallHealth() const;
+
 private:
     const Spacecraft& spacecraft_;
 };

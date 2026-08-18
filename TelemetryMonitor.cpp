@@ -12,15 +12,12 @@ HealthStatus TelemetryMonitor::checkFuelHealth() const
     constexpr double WARNING_FUEL = 25.0;
     constexpr double CRITICAL_FUEL = 10.0;
 
-
     if (fuel_percentage < CRITICAL_FUEL) {
     return HealthStatus::Critical;
     }
-
     if (fuel_percentage < WARNING_FUEL) {
     return HealthStatus::Warning;
     }
-
     return HealthStatus::Nominal;
     
    
@@ -36,11 +33,9 @@ HealthStatus TelemetryMonitor::checkBatteryHealth() const {
     if (battery_percentage < CRITICAL_BATTERY) {
     return HealthStatus::Critical;
     }
-
     if (battery_percentage < WARNING_BATTERY) {
     return HealthStatus::Warning;
     }
-
     return HealthStatus::Nominal;
 
 
@@ -72,6 +67,25 @@ HealthStatus TelemetryMonitor::checkTemperatureHealth() const {
     return HealthStatus::Nominal;
 
 
+}
 
+HealthStatus TelemetryMonitor::checkOverallHealth() const {
+    HealthStatus fuelStatus = checkFuelHealth();
+    HealthStatus batteryStatus = checkBatteryHealth();
+    HealthStatus temperatureStatus = checkTemperatureHealth();
 
+    if (fuelStatus == HealthStatus::Critical || 
+        batteryStatus == HealthStatus::Critical || 
+        temperatureStatus == HealthStatus::Critical){
+            return HealthStatus::Critical;
+    } 
+
+    if (fuelStatus == HealthStatus::Warning || 
+        batteryStatus == HealthStatus::Warning || 
+        temperatureStatus == HealthStatus::Warning){
+            return HealthStatus::Warning;
+    } 
+    
+        return HealthStatus::Nominal;
+    
 }

@@ -15,6 +15,7 @@ test_spacecraft.update(Seconds{1.0});
 HealthStatus fuelStatus = monitor.checkFuelHealth();
 HealthStatus batteryStatus = monitor.checkBatteryHealth();
 HealthStatus temperatureStatus = monitor.checkTemperatureHealth();
+HealthStatus overallStatus = monitor.checkOverallHealth();
 
 std::cout << "Time: " << test_spacecraft.get_seconds().value << " s\n";
 std::cout << "Altitude: " << test_spacecraft.get_altitude().value << " m\n";
@@ -69,6 +70,18 @@ switch(temperatureStatus){
     break;
 }
 
+std::cout << "Overall Health: ";
+switch(overallStatus){
+    case HealthStatus::Nominal:
+    std::cout << "Nominal \n";
+    break;
+    case HealthStatus::Warning:
+    std::cout << "Warning \n";
+    break;
+    case HealthStatus::Critical:
+    std::cout << "Critical \n";
+    break;
+}
 
 
 
