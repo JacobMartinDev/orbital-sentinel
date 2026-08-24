@@ -1,12 +1,20 @@
+// Telemetry.hpp represents a snapshot of the spacecraft’s measured
+// state at one specific moment.
+
 #pragma once
  
-#include <iostream>
-#include <chrono>
+#include "SpacecraftTypes.hpp"
 
 
 
-class Telemetry {
-    private: 
-        double missionTime{0.0}; 
-        std::string missionState {"InitialState"};
+struct Telemetry {
+    Seconds time;
+    Altitude altitude;
+    Velocity velocity;
+    Fuel fuel;
+    Battery battery;
+    Celsius temperature;
+    ThrusterOutput thruster;
+
 };
+

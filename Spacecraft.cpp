@@ -1,4 +1,3 @@
-#include <iostream>
 #include "Spacecraft.hpp"
 
 
@@ -47,6 +46,18 @@ Spacecraft::Spacecraft(
 
   ThrusterOutput Spacecraft::get_thruster_output() const {
     return current_thruster_output_;
+}
+
+Telemetry Spacecraft::get_telemetry() const {
+    return Telemetry{
+        current_seconds_passed_,
+        current_altitude_,
+        current_velocity_,
+        fuel_level_,
+        battery_percentage_,
+        current_temperature_,
+        current_thruster_output_
+    };
 }
 
 void Spacecraft::setThruster(ThrusterOutput output) {
