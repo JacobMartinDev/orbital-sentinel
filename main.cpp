@@ -7,7 +7,7 @@
 
 int main() {
     Spacecraft test_spacecraft;
-    TelemetryMonitor monitor(test_spacecraft);
+    TelemetryMonitor monitor;
 
     test_spacecraft.setThruster(ThrusterOutput{50.0});
     test_spacecraft.update(Seconds{1.0});
@@ -15,10 +15,10 @@ int main() {
     // Capture one complete snapshot after the update
     Telemetry telemetry = test_spacecraft.get_telemetry();
 
-    HealthStatus fuelStatus = monitor.checkFuelHealth();
-    HealthStatus batteryStatus = monitor.checkBatteryHealth();
-    HealthStatus temperatureStatus = monitor.checkTemperatureHealth();
-    HealthStatus overallStatus = monitor.checkOverallHealth();
+    HealthStatus fuelStatus = monitor.checkFuelHealth(telemetry);
+    HealthStatus batteryStatus = monitor.checkBatteryHealth(telemetry);
+    HealthStatus temperatureStatus = monitor.checkTemperatureHealth(telemetry);
+    HealthStatus overallStatus = monitor.checkOverallHealth(telemetry);
 
     std::cout << "Time: " << telemetry.time.value << " s\n";
     std::cout << "Altitude: " << telemetry.altitude.value << " m\n";

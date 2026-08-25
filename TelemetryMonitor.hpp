@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Spacecraft.hpp"
+#include "Telemetry.hpp"
 
 enum class HealthStatus {
     Nominal,
@@ -10,16 +10,16 @@ enum class HealthStatus {
 
 class TelemetryMonitor {
 public:
-    explicit TelemetryMonitor(const Spacecraft& spacecraft);
+    HealthStatus checkFuelHealth(const Telemetry& telemetry) const;
 
-        HealthStatus checkFuelHealth() const;
+    HealthStatus checkBatteryHealth(const Telemetry& telemetry) const;
 
-        HealthStatus checkBatteryHealth() const;
+    HealthStatus checkTemperatureHealth(const Telemetry& telemetry) const;
 
-        HealthStatus checkTemperatureHealth() const;
+    HealthStatus checkOverallHealth(const Telemetry& telemetry) const;
 
-        HealthStatus checkOverallHealth() const;
 
-private:
-    const Spacecraft& spacecraft_;
 };
+
+
+

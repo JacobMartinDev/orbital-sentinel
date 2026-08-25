@@ -1,13 +1,12 @@
 #include "TelemetryMonitor.hpp"
 
-TelemetryMonitor::TelemetryMonitor(const Spacecraft& spacecraft)
-    : spacecraft_(spacecraft)
-{
-}
 
-HealthStatus TelemetryMonitor::checkFuelHealth() const
+
+HealthStatus TelemetryMonitor::checkFuelHealth(
+    const Telemetry& telemetry
+) const
 {
-    double fuel_percentage = spacecraft_.get_fuel_level().value;
+    double fuel_percentage = telemetry.fuel.value;
 
     constexpr double WARNING_FUEL = 25.0;
     constexpr double CRITICAL_FUEL = 10.0;
@@ -23,9 +22,11 @@ HealthStatus TelemetryMonitor::checkFuelHealth() const
    
 }
 
-HealthStatus TelemetryMonitor::checkBatteryHealth() const {
+HealthStatus TelemetryMonitor::checkBatteryHealth(
+    const Telemetry& telemetry
+) const {
 
-    double battery_percentage = spacecraft_.get_battery_percentage().value;
+    double battery_percentage = telemetry.battery.value;
 
     constexpr double WARNING_BATTERY = 25.0;
     constexpr double CRITICAL_BATTERY = 10.0;
@@ -41,9 +42,11 @@ HealthStatus TelemetryMonitor::checkBatteryHealth() const {
 
 }
 
-HealthStatus TelemetryMonitor::checkTemperatureHealth() const {
+HealthStatus TelemetryMonitor::checkTemperatureHealth(
+    const Telemetry& telemetry
+) const {
 
-    double current_temperature = spacecraft_.get_temperature().value;
+    double current_temperature = telemetry.temperature.value;
 
     constexpr double COLD_WARNING = 0.0;
     constexpr double COLD_CRITICAL = -20.0;
@@ -69,10 +72,12 @@ HealthStatus TelemetryMonitor::checkTemperatureHealth() const {
 
 }
 
-HealthStatus TelemetryMonitor::checkOverallHealth() const {
-    HealthStatus fuelStatus = checkFuelHealth();
-    HealthStatus batteryStatus = checkBatteryHealth();
-    HealthStatus temperatureStatus = checkTemperatureHealth();
+HealthStatus TelemetryMonitor::checkOverallHealth(
+    const Telemetry& telemetry
+) const {
+    HealthStatus fuelStatus = checkFuelHealth(telemetry);
+    HealthStatus batteryStatus = checkBatteryHealth(telemetry);
+    HealthStatus temperatureStatus = checkTemperatureHealth(telemetry);
 
     if (fuelStatus == HealthStatus::Critical || 
         batteryStatus == HealthStatus::Critical || 
@@ -85,7 +90,7 @@ HealthStatus TelemetryMonitor::checkOverallHealth() const {
         temperatureStatus == HealthStatus::Warning){
             return HealthStatus::Warning;
     } 
-    
+
         return HealthStatus::Nominal;
     
 }
