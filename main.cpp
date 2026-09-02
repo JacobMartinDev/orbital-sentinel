@@ -1,9 +1,24 @@
 #include <iostream>
-
+#include <string>
 #include "Spacecraft.hpp"
 #include "SpacecraftTypes.hpp"
 #include "Telemetry.hpp"
 #include "TelemetryMonitor.hpp"
+
+
+
+std::string healthStatusToString(HealthStatus status){
+    switch(status) {
+        case HealthStatus::Critical: return "Critical";
+        case HealthStatus::Warning: return "Warning";
+        case HealthStatus::Nominal: return "Nominal";
+
+    }
+
+    return "Unknown";
+}
+
+
 
 int main() {
     Spacecraft test_spacecraft;
@@ -26,72 +41,22 @@ int main() {
     std::cout << "Thrust: " << telemetry.thruster.value << " %\n";
 
     std::cout << "Battery: " << telemetry.battery.value << " %\n";
-    std::cout << "Battery Status: ";
-
-    switch (batteryStatus) {
-        case HealthStatus::Nominal:
-            std::cout << "Nominal\n";
-            break;
-
-        case HealthStatus::Warning:
-            std::cout << "Warning\n";
-            break;
-
-        case HealthStatus::Critical:
-            std::cout << "Critical\n";
-            break;
-    }
+    std::cout << "Battery Status: " 
+              << healthStatusToString(batteryStatus) << '\n';
 
     std::cout << "Fuel: " << telemetry.fuel.value << " %\n";
-    std::cout << "Fuel Status: ";
-
-    switch (fuelStatus) {
-        case HealthStatus::Nominal:
-            std::cout << "Nominal\n";
-            break;
-
-        case HealthStatus::Warning:
-            std::cout << "Warning\n";
-            break;
-
-        case HealthStatus::Critical:
-            std::cout << "Critical\n";
-            break;
-    }
+    std::cout << "Fuel Status: "
+              << healthStatusToString(fuelStatus) << '\n';
 
     std::cout << "Temperature: "
               << telemetry.temperature.value << " C\n";
-    std::cout << "Temperature Status: ";
+    std::cout << "Temperature Status: "
+              << healthStatusToString(temperatureStatus) << '\n';
 
-    switch (temperatureStatus) {
-        case HealthStatus::Nominal:
-            std::cout << "Nominal\n";
-            break;
+    std::cout << "Overall Health: "
+              << healthStatusToString(overallStatus) << '\n';
 
-        case HealthStatus::Warning:
-            std::cout << "Warning\n";
-            break;
-
-        case HealthStatus::Critical:
-            std::cout << "Critical\n";
-            break;
-    }
-
-    std::cout << "Overall Health: ";
-
-    switch (overallStatus) {
-        case HealthStatus::Nominal:
-            std::cout << "Nominal\n";
-            break;
-
-        case HealthStatus::Warning:
-            std::cout << "Warning\n";
-            break;
-
-        case HealthStatus::Critical:
-            std::cout << "Critical\n";
-            break;
-    }
+    
 
     return 0;
 }
