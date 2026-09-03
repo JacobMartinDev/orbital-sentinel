@@ -6,7 +6,6 @@
 #include "TelemetryMonitor.hpp"
 
 
-
 std::string healthStatusToString(HealthStatus status){
     switch(status) {
         case HealthStatus::Critical: return "Critical";
@@ -18,45 +17,52 @@ std::string healthStatusToString(HealthStatus status){
     return "Unknown";
 }
 
-
+void printTelemetry(const Telemetry& telemetry, HealthStatus overallStatus) {
+    std::cout << "t=" << telemetry.time.value << "s"
+              << "  alt=" << telemetry.altitude.value << "m"
+              << "  vel=" << telemetry.velocity.value << "m/s"
+              << "  fuel=" << telemetry.fuel.value << "%"
+              << "  batt=" << telemetry.battery.value << "%"
+              << "  temp=" << telemetry.temperature.value << "C"
+              << "  thrust=" << telemetry.thruster.value << "%"
+              << "  status=" << healthStatusToString(overallStatus)
+              << '\n';
+}
 
 int main() {
-    Spacecraft test_spacecraft;
+    Spacecraft spacecraft;
     TelemetryMonitor monitor;
 
-    test_spacecraft.setThruster(ThrusterOutput{50.0});
-    test_spacecraft.update(Seconds{1.0});
+    spacecraft.setThruster(ThrusterOutput{50.0});
 
-    // Capture one complete snapshot after the update
-    Telemetry telemetry = test_spacecraft.get_telemetry();
+    constexpr double DT_SECONDS = 1.0;
+    constexpr int MAX_STEPS = 300;
 
-    HealthStatus fuelStatus = monitor.checkFuelHealth(telemetry);
-    HealthStatus batteryStatus = monitor.checkBatteryHealth(telemetry);
-    HealthStatus temperatureStatus = monitor.checkTemperatureHealth(telemetry);
-    HealthStatus overallStatus = monitor.checkOverallHealth(telemetry);
+    // Run the simulation one time-step at a time until either the
+    // spacecraft runs out of fuel or we hit the step cap. Each step
+    // publishes a full telemetry snapshot and its derived health status,
+    // the same way a real flight-software loop would report state on
+    // every tick rather than just once at the end.
+    for (int step = 0; step < MAX_STEPS; ++step) {
+        spacecraft.update(Seconds{DT_SECONDS});
 
-    std::cout << "Time: " << telemetry.time.value << " s\n";
-    std::cout << "Altitude: " << telemetry.altitude.value << " m\n";
-    std::cout << "Velocity: " << telemetry.velocity.value << " m/s\n";
-    std::cout << "Thrust: " << telemetry.thruster.value << " %\n";
+        Telemetry telemetry = spacecraft.get_telemetry();
+        HealthStatus overallStatus = monitor.checkOverallHealth(telemetry);
 
-    std::cout << "Battery: " << telemetry.battery.value << " %\n";
-    std::cout << "Battery Status: " 
-              << healthStatusToString(batteryStatus) << '\n';
+        printTelemetry(telemetry, overallStatus);
 
-    std::cout << "Fuel: " << telemetry.fuel.value << " %\n";
-    std::cout << "Fuel Status: "
-              << healthStatusToString(fuelStatus) << '\n';
+        if (overallStatus == HealthStatus::Critical) {
+            std::cout << "\nMission critical condition reached at t="
+                      << telemetry.time.value << "s. Halting simulation.\n";
+            break;
+        }
 
-    std::cout << "Temperature: "
-              << telemetry.temperature.value << " C\n";
-    std::cout << "Temperature Status: "
-              << healthStatusToString(temperatureStatus) << '\n';
-
-    std::cout << "Overall Health: "
-              << healthStatusToString(overallStatus) << '\n';
-
-    
+        if (telemetry.fuel.value <= 0.0) {
+            std::cout << "\nFuel depleted at t="
+                      << telemetry.time.value << "s. Halting simulation.\n";
+            break;
+        }
+    }
 
     return 0;
 }
