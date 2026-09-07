@@ -88,24 +88,18 @@ void Spacecraft::update(Seconds dt) {
     // 5. Update remaining spacecraft state
     current_temperature_.value += temperature_rate * dt.value;
 
-    // TODO 1: Update fuel_level_.value using fuel_rate, same as before,
-    //         but wrap the result in std::clamp(..., 0.0, 100.0)
-    //         so it can never go negative or above 100.
+   
     fuel_level_.value = std::clamp(fuel_level_.value + fuel_rate * dt.value, 0.0, 100.0);
 
     if (fuel_level_.value <= 0.0){
       current_thruster_output_ = ThrusterOutput{0.0};
     }
-    // TODO 2: Do the same for battery_percentage_.value using battery_rate.
     battery_percentage_.value = std::clamp(battery_percentage_.value + battery_rate * dt.value, 0.0, 100.0);
 
     if (battery_percentage_.value <= 0.0) {
       current_thruster_output_ = ThrusterOutput{0.0};
     }
-    // TODO 3: After fuel is updated, check: if fuel_level_.value is <= 0.0,
-    //         force current_thruster_output_ back to ThrusterOutput{0.0}.
-    //         Think about WHERE this check needs to go relative to TODO 1 —
-    //         it needs the *updated* fuel value, not the old one.
+  
 
 
 }
