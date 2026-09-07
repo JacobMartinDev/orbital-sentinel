@@ -1,21 +1,35 @@
 # Orbital Sentinel
 
-A modular C++ spacecraft simulation that models core vehicle state over
-time and publishes structured telemetry snapshots for real-time health
-monitoring.
+A modular C++17 spacecraft simulation that models vehicle state over time and
+publishes structured telemetry snapshots to a separate health-monitoring layer.
 
 ## What it does
 
-- Simulates a spacecraft's altitude, velocity, fuel, battery, and
-  temperature as a function of commanded thruster output, advancing the
-  state one discrete time-step at a time.
-- Publishes a `Telemetry` snapshot of all state variables after every
-  step, decoupling "what the spacecraft is doing" from "who's watching it."
-- Classifies fuel, battery, temperature, and overall vehicle health into
-  `Nominal` / `Warning` / `Critical` status using threshold-based rules in
-  `TelemetryMonitor`.
-- Automatically halts the simulation if fuel is depleted or overall
-  health reaches `Critical`.
+- Simulates altitude, velocity, fuel, battery and temperature as a function of
+  commanded thruster output, advancing one fixed time-step at a time.
+- Publishes a `Telemetry` snapshot after every step, so the thing being flown
+  never knows about the thing watching it.
+- Classifies fuel, battery, temperature and overall vehicle health as
+  `Nominal` / `Warning` / `Critical` against defined thresholds.
+- Cuts thrust automatically when fuel or battery is exhausted, and halts the
+  run when overall health reaches `Critical`.
+
+## Design notes
+
+**Units live in the type system.** Every measurement is wrapped in its own type
+— `Altitude`, `Velocity`, `Fuel`, `Battery`, `Celsius`, `Seconds` — each with an
+`explicit` constructor. Passing a velocity where an altitude belongs is a
+compile error rather than a number that looks fine and isn't. Mars Climate
+Orbiter was lost to exactly that class of mistake.
+
+**The simulation and the monitor are decoupled.** `Spacecraft` owns state and
+advances it. `TelemetryMonitor` reads a snapshot and judges it. Neither includes
+the other; `Telemetry` is the entire contract between them. That boundary is
+what lets the monitor be tested exhaustively without a simulation running.
+
+**Thresholds use strict inequality, deliberately.** A value sitting exactly on a
+boundary resolves to the less severe state. That is a decision rather than an
+accident, and the test suite asserts it explicitly at every boundary.
 
 ## Build
 
@@ -25,24 +39,35 @@ cmake ..
 cmake --build .
 ```
 
-This produces two executables:
+Produces two executables — `orbital_sentinel` (the simulation loop) and
+`telemetry_monitor_tests` (the verification suite). Multi-config generators
+place them in a subfolder such as `build/Debug/`.
 
-- `orbital_sentinel` — runs the simulation loop and prints telemetry each step.
-- `telemetry_monitor_tests` — runs the automated test suite (see below).
+## Verification
 
-## Testing
+23 assert-based test cases covering every threshold boundary for fuel, battery
+and temperature, plus overall-health aggregation. Each case tests the boundary
+value itself along with the values immediately on either side of it.
 
-`TelemetryMonitor`'s health-classification logic is covered by an
-assert-based unit test suite (`tests/test_telemetry_monitor.cpp`) —
-23 test cases exercising every threshold boundary for fuel, battery,
-and temperature, plus overall-health aggregation:
-
-```bash
-./telemetry_monitor_tests
 ```
+23 / 23 tests passed
+```
+
+## Sample run
+
+```
+<<< PASTE YOUR 8 TELEMETRY LINES HERE >>>
+```
+
+## Known simplifications
+
+- Rate constants are plausible placeholders, not derived from a real vehicle.
+- The monitor evaluates whether a value is out of bounds; it does not yet
+  evaluate whether the value can be trusted in the first place.
+- One-dimensional: no attitude, no orbital mechanics.
 
 ## Status
 
-Actively in development. Current focus areas: expanding the physics
-model, adding more telemetry channels, and building out the
-health-monitoring logic beyond simple thresholds.
+Actively developed. Next: monitoring the *validity* of a reading rather than
+only its magnitude — range, rate-of-change and stuck-signal detection ahead of
+threshold classification.
