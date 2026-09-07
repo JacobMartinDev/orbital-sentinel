@@ -63,7 +63,7 @@ t=2s  alt=5.5m     vel=5.5m/s    fuel=99.5%   batt=99.8%  temp=21.5C   thrust=50
 t=3s  alt=12.375m  vel=8.25m/s   fuel=99.25%  batt=99.7%  temp=22.25C  thrust=50%  status=Nominal
 t=4s  alt=22m      vel=11m/s     fuel=99%     batt=99.6%  temp=23C     thrust=50%  status=Nominal
 t=5s  alt=34.375m  vel=13.75m/s  fuel=98.75%  batt=99.5%  temp=23.75C  thrust=50%  status=Nominal
-t=6s  alt=49.5m    vel=16.5m/s   fuel=98.25%  batt=99.4%  temp=24.5C   thrust=50%  status=Nominal
+t=6s  alt=49.5m    vel=16.5m/s   fuel=98.5%   batt=99.4%  temp=24.5C   thrust=50%  status=Nominal
 t=7s  alt=67.375m  vel=19.25m/s  fuel=98.25%  batt=99.3%  temp=25.25C  thrust=50%  status=Nominal
 t=8s  alt=88m      vel=22m/s     fuel=98%     batt=99.2%  temp=26C     thrust=50%  status=Nominal
 ```
